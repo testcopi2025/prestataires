@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annuaire des Prestataires de Soins</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .logo {
+            width: 200px;
+            height: 80px;
+            background: white;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .filters {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .filter-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-reset {
+            padding: 12px 24px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 26px;
+        }
+
+        .btn-reset:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .results-info {
+            padding: 15px 40px;
+            background: #e7f3ff;
+            color: #004085;
+            font-weight: 600;
+        }
+
+        .table-container {
+            padding: 40px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: all 0.3s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 40px;
+            color: #6c757d;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .filters, .table-container {
+                padding: 20px;
+            }
+
+            .filter-group {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Annuaire des Prestataires de Soins</h1>
+            <p class="subtitle">Trouvez rapidement votre prestataire de santé</p>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label for="typeFilter">Type de Prestation</label>
+                    <select id="typeFilter">
+                        <option value="">Tous les types</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="regionFilter">Région</label>
+                    <select id="regionFilter">
+                        <option value="">Toutes les régions</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="nameFilter">Nom / Prénom</label>
+                    <input type="text" id="nameFilter" placeholder="Rechercher un nom...">
+                </div>
+                <div class="filter-item">
+                    <button class="btn-reset" onclick="resetFilters()">Réinitialiser</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-info" id="resultsInfo">
+            Affichage de <span id="resultCount">0</span> résultat(s)
+        </div>
+
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Type de Prestation</th>
+                        <th>Nom Prénom</th>
+                        <th>Région</th>
+                        <th>Adresse</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+            <div id="noResults" class="no-results" style="display: none;">
+                Aucun résultat trouvé pour les critères sélectionnés.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = [
+            {type: "Pharmacie de jour", name: "Zeineb Bahri", region: "CUN", address: "Centre Urbain Nord"},
+            {type: "Pharmacie de jour", name: "Ahmed Ennaifer", region: "BARDO 2", address: "79 Av. Habib Bougatfa, Bardo 2"},
+            {type: "Pharmacie de jour", name: "Mohamed Nejib ELAMRI", region: "MORNAGUIA", address: "11,avenue habib bourguiba Mornaguia"},
+            {type: "Pharmacie de jour", name: "Hichem Bouattour", region: "BARDO", address: "63 avenue Habib Bourguiba Bardo Tunis."},
+            {type: "Pharmacie de jour", name: "Raoudha Bahri", region: "BEN AROUS", address: "Avenue Habib Bourguiba,Ben Arous"},
+            {type: "Pharmacie de jour", name: "Sihem Belkehia", region: "MONTPLAISIR", address: "43 Avenue du JaponMontplaisir"},
+            {type: "Pharmacie de jour", name: "Leila GAIEB", region: "MARSA", address: "16 RUE DES HAFSIDESLA MARSA"},
+            {type: "Pharmacie de jour", name: "Leila Azaiez", region: "FOUCHENA", address: "Avenue de la LibertéRoute de Zaghouane FOUCHENA"},
+            {type: "Pharmacie de jour", name: "Hela ben Mnedi", region: "LAC 1", address: "Lac 1"},
+            {type: "Pharmacie de jour", name: "MERIEM KHEMIRI", region: "FOUCHENA", address: "AVENUE 7 NOVEMBRE"},
+            {type: "Pharmacie de jour", name: "MOHAMED KHESSAIRI", region: "ROUTE RAOUED", address: "03, Rue IBN HAMDOUN, Cebalat"},
+            {type: "Pharmacie de jour", name: "CHOKRI FRIKHA", region: "CITEE ETTAHRIR", address: "53 Rue 6854 ETAHRIR SUPERIEUR"},
+            {type: "Pharmacie de jour", name: "Amel Sanaa", region: "MOHAMED V", address: "83 AV MOHAMED 5 1002 BELVEDERE TUNIS"},
+            {type: "Pharmacie de jour", name: "Moufida Bouzouita", region: "LAC 1", address: "1, Rue du Lac Liman Imm. Hilal, les berges du lac"},
+            {type: "Pharmacie de jour", name: "KAMMOUN MOHAMED AMINE", region: "BEN AROUS", address: "5 avenue Habib Bourguiba, Hammam Lif, Ben Arous"},
+            {type: "Pharmacie de jour", name: "Mrad Mustapha", region: "ARIANA", address: "Rue Ali Belhaouane - Résidence les Roses Ariana Ville Ariana"},
+            {type: "Pharmacie de jour", name: "BOUHEJBA SAWSSEN EP FOURATI", region: "EZZAHRA", address: "110, Avenue Habib Bourguiba Ezzahra Ben arous"},
+            {type: "Pharmacie de jour", name: "LAHMAR HAMDI", region: "LAC 1", address: "40 Rue Lac Léman Les Berges Du Lac 1 immeuble LAGO."},
+            {type: "Pharmacie de jour", name: "KHALIL DOUIK", region: "SOUSSE", address: "AV HABIB BOURGUIBA THAMER SOUSSE"},
+            {type: "Pharmacie de jour", name: "ADEL HERGULI", region: "MONASTIR", address: "Avenue 14 Janvier 2011 Data, Monastir"},
+            {type: "Pharmacie de jour", name: "WISSAL JRAD", region: "THRAYETT", address: "Boulevard de l'Environnement, Zaouit-Ksibat - Thrayett SOUSSE"},
+            {type: "Pharmacie de jour", name: "Mhamed Lahmer", region: "JENDOUBA", address: "Rue Sakiet Sidi Youssef Jendouba, 8100 jendouba"},
+            {type: "Pharmacie de jour", name: "Hasni Abdelfateh", region: "BOUSALEM", address: "Rue des Jardin Bou Salem"},
+            {type: "Pharmacie de jour", name: "Abdellatif Boujnah", region: "BEJA", address: "Avenue Mongi Slim 9000 Beja"},
+            {type: "Pharmacie de jour", name: "Anouar Belhareth", region: "BOUSALEM", address: "8 Rue Taieb Mhiri"},
+            {type: "Pharmacie de jour", name: "Boouthaina Bouani", region: "JENDOUBA", address: "1. Place Transport Terrestre , Boulevard 9 avril , Jendouba 8100"},
+            {type: "Pharmacie de jour", name: "Mohamed Amin Kammoun", region: "BEN AROUS", address: "5 Av. Habib Bourguiba, Hammam-Lif 2050"},
+            {type: "Pharmacie de jour", name: "Hasna Lamouchi (pharmacie les jasmins)", region: "CUN", address: "Immeuble Nour City RDC Magasin N°8"},
+            {type: "Pharmacie de jour", name: "MONIA BARKA ROUIS", region: "NABEUL", address: "91, Avenue Habib Bourguiba Dar Chaabene"},
+            {type: "Pharmacie de jour", name: "AMEL HANCHA", region: "MATEUR", address: "CITE OMRAN 2"},
+            {type: "Pharmacie de jour", name: "KHALI RABAI", region: "BEJA", address: "34 AVENUE DE LA REPUBLIQUE"},
+            {type: "Pharmacie de jour", name: "ALOUANE BOUNAWAS", region: "BEJA", address: "2, Place du 2 Mars 1934 9000 Béjà"},
+            {type: "Pharmacie de jour", name: "ABDELLATIF BOUJNEH", region: "BEJA", address: "Avenue Mongi Slim 9000 Beja"},
+            {type: "Centre de radiologie", name: "Centre d'imagerie LGR", region: "AOUINA", address: "Résidence Salma, Bloc 'F', 2éme étage n°4, Dar Fadhal, L'Aouina."},
+            {type: "Centre de radiologie", name: "Avicenne", region: "MANAR", address: "MANAR"},
+            {type: "Centre de radiologie", name: "Mohamed Karray", region: "BELVEDER", address: "97 Bis rue de Palestine, Tunis Belvédère"},
+            {type: "Centre de radiologie", name: "Mourad Ben Younes", region: "MOUROUJ 1", address: "Carrefour Médical –Avenue des Martyrs-El Mourouj1"},
+            {type: "Centre de radiologie", name: "GHARBI HASSEN IBN ZOHR", region: "CITE KHADRA", address: "Centre Ibn Zohr, Cité Khadra"},
+            {type: "Centre de radiologie", name: "IRM BEN AROUS", region: "BEN AROUS", address: "GP1 KM 8 CHOUCHET RADES RADES 2040"},
+            {type: "Centre de radiologie", name: "LEILA ZOUARI", region: "SOUSSE", address: "IMMEUBLE CITE CENTRE DEVANT HOMITAL SAHLOUL SOUSSE"},
+            {type: "Laboratoire d'analyse médicale", name: "Nesrine Gannoun", region: "BELVEDER", address: "23 RUE DU DR ALPHONSE LAVERAN BELVEDER"},
+            {type: "Laboratoire d'analyse médicale", name: "Lamia Mechmech", region: "SIDI HSSINE", address: "101 AV DE L'ENVIRONEMENT Sidi Hssine"},
+            {type: "Laboratoire d'analyse médicale", name: "Raja Aissaoui", region: "TEBOURBA", address: "CENTRE AVICENNEAVENUE MONGI SLIM Tebourba Manouba"},
+            {type: "Laboratoire d'analyse médicale", name: "Dr Atf Kamoun", region: "MANAR", address: "Résidence les Jasmins Bloc D,2éme étage,app12,Rue Habib El Chatti Manar 1"},
+            {type: "Laboratoire d'analyse médicale", name: "Rabaa Hichri", region: "MNIHLA", address: "Echifaa Centre Médicale,1er étage Route de Bizerte Km 4,5 (à coté Municipalité Mnihla)"},
+            {type: "Laboratoire d'analyse médicale", name: "Aicha Benzarti", region: "MOHAMED V", address: "ENTRE AV MOHAMED AV KHAIER EDDINE BECHA"},
+            {type: "Laboratoire d'analyse médicale", name: "Bio Quality Lab", region: "MENZAH 9", address: "40 Avenue Salah Ben Youssef, Tunis 1013 Menzah 9"},
+            {type: "Laboratoire d'analyse médicale", name: "Sami El Cadhi", region: "ARIANA", address: "Centre médical Alpha, rue Mustapha Mohsen, Borj Louzir"},
+            {type: "Laboratoire d'analyse médicale", name: "Olfa Marrakchi", region: "CUN", address: "Centre Médical Pasteur/ Clinique Pasteur mezzanine Cab. M2 Centre"},
+            {type: "Laboratoire d'analyse médicale", name: "Mouna Mnasri", region: "FOUCHENA", address: "06 Avenue de la liberté FOUCHENA"},
+            {type: "Laboratoire d'analyse médicale", name: "Meriem Boujlel", region: "MORNAGUIA", address: "6 B,BASSATINE CITE ESSAD Mornaguia"},
+            {type: "Laboratoire d'analyse médicale", name: "Nejla Trad", region: "JENDOUBA", address: "Avenue Ali Belahouane 8100 Jendouba, Jendouba"},
+            {type: "Laboratoire d'analyse médicale", name: "Nejem Souli", region: "JENDOUBA", address: "Centre Médical Ennakhil : Avenue Habib Bourguiba Apt 01 (Rez de Chaussée) - Jendouba"},
+            {type: "Laboratoire d'analyse médicale", name: "Bechir Hmissi", region: "BEJA", address: "56, Av. de La République - Immeuble Kandil 9000 Béjà"},
+            {type: "Laboratoire d'analyse médicale", name: "Faten Amdouni", region: "JENDOUBA", address: "Centre Médical Kenza Tulipe, Avenue Habib Bourguiba (à coté du Gouvernorat) - 8100 Jendouba"},
+            {type: "Laboratoire d'analyse médicale", name: "Naoufel Nabli", region: "SOUSSE", address: "Immmobilière Médicale Essalem Avenue de l'UMA juste à coté Clinique ESSALEM Sousse، 4000"},
+            {type: "Laboratoire d'analyse médicale", name: "Kmar Jrah", region: "MONASTIR", address: "Avenue du combattant suprême, Monastir"},
+            {type: "Médecin Généraliste", name: "KHALED JELASSI", region: "CUN", address: "APP N24 IMMEUBLE NOUR CITY CENTRE URBAIN NORD"},
+            {type: "Médecin Généraliste", name: "RABAA MATHLOUTHI", region: "MANAR", address: "12 AVENUE ROI ABDEAZIZ ALSAOUDIMMEUBLE SIS APP M1"},
+            {type: "Opticien", name: "Clin d'Œil", region: "ARIANA", address: "50 AVENUE HABIB BOURGUIBA Ariana Ariana Tunisie"},
+            {type: "Opticien", name: "AR OPTIC", region: "MOUROUJ 6", address: "8 AVENUE DES MARTYRES RESIDENCE HAMZA EL MOUROUJ 6"},
+            {type: "Opticien", name: "GLOBAL OPTIQUE", region: "SFAX", address: "Rue Mongi Slim Kassas Sakiet Ezzit SFAX"},
+            {type: "Opticien", name: "Optic Zorgati", region: "SOUSSE", address: "Av Ibn Jazar Sousse"},
+            {type: "Opticien", name: "SAOUSSEN MAHFOUDHI", region: "KHEZMA", address: "Khzema Est à côté traveltodo, SOUSSE"},
+            {type: "Opticien", name: "GLOBAL OPTIQUE", region: "SFAX", address: "Avenue Habib Bourguiba,Imm Intilaka 2 Beb Bhar SFAX"},
+            {type: "Opticien", name: "GLOBAL OPTIQUE", region: "SFAX", address: "Av 14 Janvier Imm Aida SFAX"},
+            {type: "Opticien", name: "GLOBAL OPTIQUE", region: "SFAX", address: "Route Gremda 0,5km Beb El Jebli imm Jebli centre SFAX"},
+            {type: "Opticien", name: "GLOBAL OPTIQUE", region: "AOUINA", address: "Cite Wahat Aouina Residence Al Anwar Tunis"},
+            {type: "Clinique", name: "Clinique EL MOUROUJ", region: "MOUROUJ", address: "El Mourouj, Tunisie"},
+            {type: "Clinique", name: "Clinique Montplaisir", region: "MONTPLAISIR", address: "rue 8010 N°3 Montplaisir 1073-Tunis"},
+            {type: "Clinique", name: "Clinique La Rose", region: "LAC 2", address: "Immeuble la rose avenue de la bourse, Les jardins du lac, Tunis 1053, Tunisie"},
+            {type: "Clinique", name: "Clinique Amilcar", region: "ENNASR", address: "lotissement Panorama Ennasr 1 croisement Hédi Nouira Borj Turki Ariana"},
+            {type: "Clinique", name: "Clinique les Jasmins", region: "CENTRE URBAIN NORD", address: "Centre Urbain Nord"},
+            {type: "Clinique", name: "Clinique Ezzahra", region: "EZZAHRA", address: "Rue Abu El Kacem Ezzahraoui,Ezzahra 2034 Ben Arous"},
+            {type: "Clinique", name: "Clinique Hannibal", region: "LAC 2", address: "Cité les pins, les Berges du Lac 2"},
+            {type: "Clinique", name: "Clinique Soukra", region: "SOUKRA", address: "Rue Cheikh Mohamed Enneifer,Soukra"},
+            {type: "Clinique", name: "Clinique Carthagène", region: "CENTRE URBAIN NORD", address: "Centre Urbain Nord"},
+            {type: "Clinique", name: "Clinique El Taoufik", region: "Tunis", address: "Avenue de la ligues des Etats Arabes"},
+            {type: "Clinique", name: "Clinique ENNASR", region: "ENNASR", address: "50, Avenue de l'Ere Nouvelle Ennasr II Ariana, 2037, Tunisie"},
+            {type: "Clinique", name: "Clinique Bardo", region: "BARDO", address: "24 Avenue Taieb Mhiri, 2000 Le Bardo"},
+            {type: "Clinique", name: "Clinique EL AMEN", region: "Mutuelleville", address: "20 - 22 Rue Azziza Othmana، Tunis 1082, Tunisie"},
+            {type: "Clinique", name: "Clinique EL AMEN", region: "Marsa", address: "P9, Carthage, Tunisie"},
+            {type: "Clinique", name: "Clinique La Concorde", region: "SOUSSE", address: "Cité Boukhzar Bouhsina, 4002 Sousse"},
+            {type: "Clinique", name: "Clinique EL YOSR", region: "SOUSSE", address: "10 bis Rue Haroun Errachid, Sousse 4000"},
+            {type: "Clinique", name: "Clinique ESSALEM", region: "SOUSSE", address: "Lycée des Jeunes Filles, P1 Ave Tahar Sfar, Sousse 4000"},
+            {type: "Clinique", name: "Clinique EL HABIB", region: "Monastir", address: "Av Avicenne, Monastir 5000"},
+            {type: "Clinique", name: "Clinique EL AMEN", region: "NABEUL", address: "Avenue Hédi Nouira, Nabeul, Tunisie"},
+            {type: "Clinique", name: "Clinique EL AMEN", region: "Cité El Jala", address: "Bizerte, Tunisie"},
+            {type: "Clinique", name: "Clinique EL AMEN", region: "BEJA", address: "BEJA"},
+            {type: "Clinique", name: "Clinique EL YOSRI", region: "GAFSA", address: "Rue de palestine, cité ENNOUR Gafsa 2100 Gafsa, Tunisie"},
+            {type: "Clinique", name: "Clinique EL AMEN", region: "GAFSA", address: "GAFSA"},
+            {type: "Clinique", name: "Clinique les Anges", region: "Jandouba", address: "Av. 9 Avril, Jendouba 8100"}
+        ];
+
+        let filteredData = [...data];
+
+        function populateFilters() {
+            const types = [...new Set(data.map(item => item.type))].sort();
+            const regions = [...new Set(data.map(item => item.region))].sort();
+
+            const typeSelect = document.getElementById('typeFilter');
+            const regionSelect = document.getElementById('regionFilter');
+
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                typeSelect.appendChild(option);
+            });
+
+            regions.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region;
+                option.textContent = region;
+                regionSelect.appendChild(option);
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const noResults = document.getElementById('noResults');
+            const resultCount = document.getElementById('resultCount');
+
+            tbody.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                noResults.style.display = 'block';
+                document.querySelector('table').style.display = 'none';
+            } else {
+                noResults.style.display = 'none';
+                document.querySelector('table').style.display = 'table';
+
+                filteredData.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.type}</td>
+                        <td>${item.name}</td>
+                        <td>${item.region}</td>
+                        <td>${item.address}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            resultCount.textContent = filteredData.length;
+        }
+
+        function applyFilters() {
+            const typeFilter = document.getElementById('typeFilter').value;
+            const regionFilter = document.getElementById('regionFilter').value;
+            const nameFilter = document.getElementById('nameFilter').value.toLowerCase();
+
+            filteredData = data.filter(item => {
+                const typeMatch = !typeFilter || item.type === typeFilter;
+                const regionMatch = !regionFilter || item.region === regionFilter;
+                const nameMatch = !nameFilter || item.name.toLowerCase().includes(nameFilter);
+
+                return typeMatch && regionMatch && nameMatch;
+            });
+
+            renderTable();
+        }
+
+        function resetFilters() {
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('regionFilter').value = '';
+            document.getElementById('nameFilter').value = '';
+            filteredData = [...data];
+            renderTable();
+        }
+
+        document.getElementById('typeFilter').addEventListener('change', applyFilters);
+        document.getElementById('regionFilter').addEventListener('change', applyFilters);
+        document.getElementById('nameFilter').addEventListener('input', applyFilters);
+
+        populateFilters();
+        renderTable();
+    </script>
+</body>
+</html>
